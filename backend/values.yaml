@@ -5,8 +5,7 @@
 replicaCount: 1
 
 image:
-  # repository: "blueguys/class-schedule-backend"
-  repository: "busybox"
+  repository: "blueguys/class-schedule-backend"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -24,7 +23,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: "k8s-workload-account"
 
 podAnnotations: {}
 podLabels: {}
@@ -42,7 +41,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ingress:
   enabled: false
@@ -75,7 +74,7 @@ resources: {}
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 3
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
@@ -98,7 +97,80 @@ tolerations: []
 
 affinity: {}
 
-## Child charts parameters override
+# Child charts parameters override
 redis:
   auth:
     enabled: false
+  replica:
+    replicaCount: 2
+
+# GCP configuration
+gcp:
+  secrets:
+    serviceAccount:
+      name: k8s-sercet-user
+  projectId: softseve-blue-team
+  cluster:
+    location: us-central1-b
+    name: stage-schedule
+
+
+# Secret store
+secretStore:
+  name: class-schedule-secret-store
+
+# External secrets
+externalSecrets:
+  name: externalsecret
+  targetName: class-schedule-secrets
+  refreshTime: 1m
+
+# List of envirnoment variables
+envSecretsMap:
+  - name: JWT_TOKEN
+    secretKey: jwt-token
+    remoteKey: jwt_token
+
+  - name: JWT_EXPIRED
+    secretKey: jwt-expired
+    remoteKey: jwt_expired
+
+  - name: POSTGRES_DATABASE
+    secretKey: postgres-db
+    remoteKey: postgres_database
+    
+  - name: POSTGRES_URL
+    secretKey: postgres-url
+    remoteKey: postgres_url
+    
+  - name: POSTGRES_ADMIN
+    secretKey: postgres-admin
+    remoteKey: postgres_admin
+    
+  - name: POSTGRES_ADMIN_PASSWORD
+    secretKey: postgres-password
+    remoteKey: postgres_admin_password
+    
+  - name: REDIS_URL
+    secretKey: redis-url
+    remoteKey: redis_url
+    
+  - name: MONGO_DATABASE
+    secretKey: mongo-db
+    remoteKey: mongo_database
+    
+  - name: MONGO_URL
+    secretKey: mongo-url
+    remoteKey: mongo_url
+    
+  - name: SMTP_HOST
+    secretKey: smtp-host
+    remoteKey: jwt_token
+    
+  - name: SMTP_USERNAME
+    secretKey: smtp-username
+    remoteKey: smtp_username
+    
+  - name: SMTP_PASSOWRD
+    secretKey: smtp-password
+    remoteKey: smtp_passowrd

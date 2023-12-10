@@ -1,3 +1,4 @@
+{{- $secretTargetName := .Values.externalSecrets.targetName -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,82 +38,26 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-          - name: JWT_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-jwt-token
-          - name: JWT_EXPIRED
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-jwt-expired
-
-          - name: POSTGRES_DATABASE
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-postgres-db
-          - name: POSTGRES_URL
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-postgres-url
-          - name: POSTGRES_ADMIN
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-postgres-admin
-          - name: POSTGRES_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-postgres-password
-
-          - name: REDIS_URL
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-redis-url
-
-          - name: MONGO_DATABASE
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-mongo-db
-          - name: MONGO_URL
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-mongo-url
-
-          - name: SMTP_HOST
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-smtp-host
-          - name: SMTP_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-smtp-password
-          - name: SMTP_PASSOWRD
-            valueFrom:
-              secretKeyRef:
-                name: schedule-app-secrets
-                key: secret-smtp-username
+{{- range .Values.envSecretsMap }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretTargetName }}
+                  key: {{ .secretKey }}
+{{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          #   initialDelaySeconds: 360
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
