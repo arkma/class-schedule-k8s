@@ -60,3 +60,13 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create service account annotations to include additional info
+*/}}
+{{- define "backend.serviceAccountName.annotations" -}}
+{{- if .Values.serviceAccount.annotations -}}
+{{- toYaml .Values.serviceAccount.annotations  }}
+{{- end -}}
+iam.gke.io/gcp-service-account: {{ .Values.gcp.secrets.serviceAccount.name }}@{{ .Values.gcp.projectId }}.iam.gserviceaccount.com
+{{- end }}
