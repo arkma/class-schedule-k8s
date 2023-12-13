@@ -23,9 +23,9 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: "k8s-workload-account"
+  name: ""
 
-podAnnotations: {}
+podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'false'}
 podLabels: {}
 
 podSecurityContext: {}
@@ -98,17 +98,39 @@ tolerations: []
 affinity: {}
 
 # Child charts parameters override
+# redis:
+#   auth:
+#     enabled: false
+#   replica:
+#     replicaCount: 0
+#   sentinel:
+#     service:
+#       headless:
+#         annotations: {consul.hashicorp.com/service-ignore: "true"}
+#   master:
+#     serviceAccount:
+#       create: true
+#   serviceAccount:
+#     name: "backend-redis"
+
 redis:
   auth:
     enabled: false
   replica:
-    replicaCount: 2
+    replicaCount: 0
+
 
 # GCP configuration
 gcp:
-  secrets:
+  iam:
     serviceAccount:
       name: k8s-sercet-user
+  k8sServiceAccount:
+    name: k8s-workload-account
+    annotations: {}
+    automount: true
+    create: true
+
   projectId: softseve-blue-team
   cluster:
     location: us-central1-b
@@ -129,48 +151,64 @@ externalSecrets:
 envSecretsMap:
   - name: JWT_TOKEN
     secretKey: jwt-token
-    remoteKey: jwt_token
+    remoteKeyBase: jwt-token
 
   - name: JWT_EXPIRED
     secretKey: jwt-expired
-    remoteKey: jwt_expired
+    remoteKeyBase: jwt-expired
 
-  - name: POSTGRES_DATABASE
+  - name: POSTGRES_DB
     secretKey: postgres-db
-    remoteKey: postgres_database
-    
-  - name: POSTGRES_URL
-    secretKey: postgres-url
-    remoteKey: postgres_url
+    remoteKeyBase: postgresql-db
+
+  - name: POSTGRES_PORT
+    secretKey: postgres-port
+    remoteKeyBase: postgresql-port
+
+  - name: POSTGRE_IP
+    secretKey: postgres-ip
+    remoteKeyBase: postgresql-ip
     
   - name: POSTGRES_ADMIN
     secretKey: postgres-admin
-    remoteKey: postgres_admin
+    remoteKeyBase: postgresql-admin
     
   - name: POSTGRES_ADMIN_PASSWORD
     secretKey: postgres-password
-    remoteKey: postgres_admin_password
+    remoteKeyBase: postgresql-admin-password
     
-  - name: REDIS_URL
+  - name: REDIS_IP
     secretKey: redis-url
-    remoteKey: redis_url
+    remoteKeyBase: redis-ip
     
   - name: MONGO_DATABASE
     secretKey: mongo-db
-    remoteKey: mongo_database
+    remoteKeyBase: mongo-db
     
   - name: MONGO_URL
     secretKey: mongo-url
-    remoteKey: mongo_url
+    remoteKeyBase: mongo-url
     
   - name: SMTP_HOST
     secretKey: smtp-host
-    remoteKey: jwt_token
+    remoteKeyBase: smtp-host
     
   - name: SMTP_USERNAME
     secretKey: smtp-username
-    remoteKey: smtp_username
+    remoteKeyBase: smtp-username
     
   - name: SMTP_PASSOWRD
     secretKey: smtp-password
-    remoteKey: smtp_passowrd
+    remoteKeyBase: smtp-passowrd
+
+# Environment do deploy
+environmentAllowedTypes:
+  - dev
+  - stage
+  - prod
+
+# The default environment is dev 
+environmentType: dev
+
+consulConnectInject: true
+

@@ -60,3 +60,10 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Form backend api url
+*/}}
+{{- define "frontend.backendApiUrl" -}}
+"{{ .Values.backend.serviceName }}.{{ .Values.backend.namespace | default .Release.Namespace }}.svc.cluster.local"
+{{- end }}

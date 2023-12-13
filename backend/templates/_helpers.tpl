@@ -61,12 +61,30 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+
+#################### CUSTOM ######################################################
 {{/*
 Create service account annotations to include additional info
 */}}
-{{- define "backend.serviceAccountName.annotations" -}}
-{{- if .Values.serviceAccount.annotations -}}
-{{- toYaml .Values.serviceAccount.annotations  }}
+{{- define "backend.k8sServiceAccount.annotations" -}}
+{{- if .Values.gcp.k8sServiceAccount.annotations -}}
+{{- toYaml .Values.gcp.k8sServiceAccount.annotations  }}
 {{- end -}}
-iam.gke.io/gcp-service-account: {{ .Values.gcp.secrets.serviceAccount.name }}@{{ .Values.gcp.projectId }}.iam.gserviceaccount.com
+iam.gke.io/gcp-service-account: {{ .Values.gcp.iam.serviceAccount.name }}@{{ .Values.gcp.projectId }}.iam.gserviceaccount.com
+{{- end }}
+
+{{/*
+Create external secrets remote key mapping in order to satisy different envirnoments 
+*/}}
+{{- define "backend.externalSecrets.EnvirnomentsMapping" -}}
+{{- $envType := .Values.environmentType -}}
+{{- if not (has .Values.environmentType .Values.environmentAllowedTypes) -}}
+{{- $errorMessage := printf "Value '%s' for .Values.environmentType is not allowed! Allowed types: %s" .Values.environmentType .Values.environmentAllowedTypes -}}
+{{- fail $errorMessage -}}
+{{- end -}}
+{{- range .Values.envSecretsMap }}
+- secretKey: {{ .secretKey }}
+  remoteRef:
+    key: {{ $envType }}-{{ .remoteKeyBase }}
+{{- end }}
 {{- end }}

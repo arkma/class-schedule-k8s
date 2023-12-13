@@ -17,7 +17,7 @@ fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: false
+  create: true
   # Automatically mount a ServiceAccount's API credentials?
   automount: true
   # Annotations to add to the service account
@@ -26,7 +26,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {}
+podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'false'}
 podLabels: {}
 
 podSecurityContext: {}
@@ -101,5 +101,8 @@ affinity: {}
 ## Define backend adress
 ## It will use ingres a bit later
 backend:
+  serviceName: backend
+  # namespace: schedule
   api_url: "backend.default.svc.cluster.local"
   api_port: 8080
+
