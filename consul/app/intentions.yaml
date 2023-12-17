@@ -1,0 +1,13 @@
+---
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceIntentions
+metadata:
+  name: frontend
+  namespace: schedule-app
+# Allow traffic from frontend to backend
+spec:
+  destination:
+    name: backend
+  sources:
+    - name: frontend
+      action: allow
