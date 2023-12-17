@@ -101,8 +101,6 @@ affinity: {}
 ## Define backend adress
 ## It will use ingres a bit later
 backend:
-  serviceName: backend
-  # namespace: schedule
-  api_url: "backend.default.svc.cluster.local"
+  api_url: "localhost"
   api_port: 8080
 

@@ -38,7 +38,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: API_URL
-            value: {{ include "frontend.backendApiUrl" . }}
+            value: {{ .Values.backend.api_url }}
           - name: API_PORT
             value: {{ .Values.backend.api_port | quote }}
           ports:

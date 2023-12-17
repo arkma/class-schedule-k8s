@@ -124,12 +124,12 @@ redis:
 gcp:
   iam:
     serviceAccount:
-      name: k8s-sercet-user
+      name: stage-kubernetes
   k8sServiceAccount:
-    name: k8s-workload-account
+    name: stage-kubernetes
     annotations: {}
     automount: true
-    create: true
+    create: false
 
   projectId: softseve-blue-team
   cluster:
@@ -209,6 +209,3 @@ environmentAllowedTypes:
 
 # The default environment is dev 
 environmentType: dev
-
-consulConnectInject: true
-
