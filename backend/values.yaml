@@ -25,7 +25,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'false'}
+podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'true',consul.hashicorp.com/connect-service-upstreams: 'backend-redis-master:6379'}
 podLabels: {}
 
 podSecurityContext: {}
@@ -98,26 +98,17 @@ tolerations: []
 affinity: {}
 
 # Child charts parameters override
-# redis:
-#   auth:
-#     enabled: false
-#   replica:
-#     replicaCount: 0
-#   sentinel:
-#     service:
-#       headless:
-#         annotations: {consul.hashicorp.com/service-ignore: "true"}
-#   master:
-#     serviceAccount:
-#       create: true
-#   serviceAccount:
-#     name: "backend-redis"
-
 redis:
   auth:
     enabled: false
+  master:
+    serviceAccount:
+      create: true
+    podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'true'}
   replica:
     replicaCount: 0
+
+# kubectl patch service backend-redis-headless -n schedule-app -p '{"metadata":{"labels":{"consul.hashicorp.com/service-ignore":"true"}}}'
 
 
 # GCP configuration
@@ -177,9 +168,9 @@ envSecretsMap:
     secretKey: postgres-password
     remoteKeyBase: postgresql-admin-password
     
-  - name: REDIS_IP
-    secretKey: redis-url
-    remoteKeyBase: redis-ip
+  # - name: REDIS_IP
+  #   secretKey: redis-url
+  #   remoteKeyBase: redis-ip
     
   - name: MONGO_DATABASE
     secretKey: mongo-db

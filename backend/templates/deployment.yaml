@@ -45,6 +45,8 @@ spec:
                   name: {{ $secretTargetName }}
                   key: {{ .secretKey }}
 {{- end }}
+            - name: REDIS_IP
+              value: "localhost"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
