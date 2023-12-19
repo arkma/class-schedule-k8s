@@ -45,6 +45,8 @@ spec:
                   name: {{ $secretTargetName }}
                   key: {{ .secretKey }}
 {{- end }}
+            - name: REDIS_IP
+              value: "localhost"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -54,10 +56,10 @@ spec:
               path: "/public/semesters"
               port: http
             initialDelaySeconds: 120
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+          readinessProbe:
+            httpGet:
+              path: "/public/semesters"
+              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}

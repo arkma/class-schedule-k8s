@@ -26,7 +26,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'false'}
+podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'true',consul.hashicorp.com/connect-service-upstreams: 'backend:8080'}
 podLabels: {}
 
 podSecurityContext: {}
@@ -41,7 +41,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 80
 
 ingress:
@@ -101,8 +101,6 @@ affinity: {}
 ## Define backend adress
 ## It will use ingres a bit later
 backend:
-  serviceName: backend
-  # namespace: schedule
-  api_url: "backend.default.svc.cluster.local"
+  api_url: "localhost"
   api_port: 8080
 
