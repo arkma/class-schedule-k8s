@@ -1,12 +1,10 @@
----
 apiVersion: consul.hashicorp.com/v1alpha1
 kind: ServiceIntentions
 metadata:
-  name: frontend-gateway
-# Allow traffic from frontend-gateway to frontend
+  name: {{ include "backend.fullname" . }}
 spec:
   destination:
-    name: frontend
+    name: backend-redis-master
   sources:
-    - name: frontend-gateway
+    - name: {{ include "backend.fullname" . }}
       action: allow

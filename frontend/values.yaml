@@ -101,6 +101,7 @@ affinity: {}
 ## Define backend adress
 ## It will use ingres a bit later
 backend:
+  name: backend
   api_url: "localhost"
   api_port: 8080
 

@@ -1,0 +1,14 @@
+---
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceIntentions
+metadata:
+  name: {{ include "consul-gateway.fullname" . }}
+  labels:
+    {{- include "consul-gateway.labels" . | nindent 4 }}
+# Allow traffic from frontend-gateway to frontend
+spec:
+  destination:
+    name: {{ .Values.frontend.svc.name }}
+  sources:
+    - name: {{ include "consul-gateway.fullname" . }}
+      action: allow

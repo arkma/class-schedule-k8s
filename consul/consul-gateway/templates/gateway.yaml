@@ -1,0 +1,17 @@
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+# The Gateway is the main infrastructure resource that links API gateway components.
+kind: Gateway
+metadata:
+  name: {{ include "consul-gateway.fullname" . }}
+  labels:
+    {{- include "consul-gateway.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: {{ .Values.gatewayClassName }}
+  listeners:
+  - protocol: {{ .Values.listen.protocol }}
+    port: {{ .Values.listen.port }}
+    name: {{ .Values.listen.protocol | lower }}
+    allowedRoutes:
+      namespaces:
+        from: All

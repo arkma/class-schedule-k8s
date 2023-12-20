@@ -1,14 +1,13 @@
----
 apiVersion: gateway.networking.k8s.io/v1beta1
-# HTTPRoute routes HTTP requests to backend services.
 kind: HTTPRoute
 metadata:
-  name: http-route-1
-  namespace: consul
+  name: {{ include "consul-gateway.router" . }}
+  labels:
+    {{- include "consul-gateway.labels" . | nindent 4 }}
 spec:
   # Defines the gateway listener.
   parentRefs:
-  - name: frontend-gateway
+  - name: {{ include "consul-gateway.fullname" . }}
   # Rules define behaviors for network traffic that goes through the route.
   rules:
   - matches:
@@ -18,6 +17,6 @@ spec:
     # Defines the backend service.
     backendRefs:
     - kind: Service
-      name: frontend
-      namespace: schedule-app
-      port: 80
+      name: {{ .Values.frontend.svc.name }}
+      namespace: {{ .Values.appNamespace }}
+      port: {{ .Values.frontend.svc.port }}

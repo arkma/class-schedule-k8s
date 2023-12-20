@@ -105,6 +105,8 @@ redis:
     serviceAccount:
       create: true
     podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'true'}
+    persistence:
+      size: 1Gi
   replica:
     replicaCount: 0
 
