@@ -1,0 +1,10 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceIntentions
+metadata:
+  name: {{ include "frontend.fullname" . }}
+spec:
+  destination:
+    name: {{ .Values.backend.name }}
+  sources:
+    - name: {{ include "frontend.fullname" . }}
+      action: allow

@@ -1,0 +1,16 @@
+
+# Namespace where main application is deployed
+appNamespace: schedule-app
+
+# Name of the gateway class
+gatewayClassName: consul
+
+# Port and protocol listen to
+listen:
+  port: 80
+  protocol: HTTP
+
+frontend:
+  svc:
+    name: frontend
+    port: 80 

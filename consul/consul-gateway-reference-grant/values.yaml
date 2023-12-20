@@ -1,0 +1,5 @@
+
+routers:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    namespace: consul

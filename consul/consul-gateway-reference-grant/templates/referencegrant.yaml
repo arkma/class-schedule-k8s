@@ -1,0 +1,16 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: {{ include "consul-gateway-reference-grant.fullname" . }}
+  labels:
+    {{- include "consul-gateway-reference-grant.labels" . | nindent 4 }}
+spec:
+  from:
+{{- range .Values.routers }}
+    - group: {{ .group }}
+      kind: {{ .kind }}
+      namespace: {{ .namespace }}  # Must match the namespace that api-gw/routes.yaml is deployed into
+{{- end }}
+  to:
+    - group: ""
+      kind: Service
