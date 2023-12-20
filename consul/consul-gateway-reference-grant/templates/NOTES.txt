@@ -1,0 +1,5 @@
+The reference-grant "{{ include "consul-gateway-reference-grant.fullname" . }}" been successfuly applied.
+You have configured it for the following routes:
+{{- range .Values.routers }}
+- group: {{ .group }}, kind: {{ .kind }}, namespace: {{ .namespace }}
+{{- end }}
