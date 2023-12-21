@@ -109,30 +109,17 @@ redis:
       size: 1Gi
   replica:
     replicaCount: 0
-
-# kubectl patch service backend-redis-headless -n schedule-app -p '{"metadata":{"labels":{"consul.hashicorp.com/service-ignore":"true"}}}'
-
-
-# GCP configuration
-gcp:
-  iam:
-    serviceAccount:
-      name: stage-kubernetes
-  k8sServiceAccount:
-    name: stage-kubernetes
-    annotations: {}
-    automount: true
-    create: false
-
-  projectId: softseve-blue-team
-  cluster:
-    location: us-central1-b
-    name: stage-schedule
-
-
 # Secret store
 secretStore:
   name: class-schedule-secret-store
+  vaultProvider:
+    server: "YOUR_SERVER_ADDRESS"
+    path: class_schedule
+    version: v2
+    secretToken:
+      name: hashicorp-vault-token
+      key: token
+      token: null
 
 # External secrets
 externalSecrets:
@@ -140,59 +127,56 @@ externalSecrets:
   targetName: class-schedule-secrets
   refreshTime: 1m
 
+
 # List of envirnoment variables
 envSecretsMap:
   - name: JWT_TOKEN
     secretKey: jwt-token
-    remoteKeyBase: jwt-token
+    property: jwt_token
 
   - name: JWT_EXPIRED
     secretKey: jwt-expired
-    remoteKeyBase: jwt-expired
+    property: jwt_expired
 
   - name: POSTGRES_DB
     secretKey: postgres-db
-    remoteKeyBase: postgresql-db
+    property: postgresql_db
 
   - name: POSTGRES_PORT
     secretKey: postgres-port
-    remoteKeyBase: postgresql-port
+    property: postgresql_port
 
   - name: POSTGRE_IP
     secretKey: postgres-ip
-    remoteKeyBase: postgresql-ip
+    property: postgresql_ip
     
   - name: POSTGRES_ADMIN
     secretKey: postgres-admin
-    remoteKeyBase: postgresql-admin
+    property: postgresql_admin
     
   - name: POSTGRES_ADMIN_PASSWORD
     secretKey: postgres-password
-    remoteKeyBase: postgresql-admin-password
-    
-  # - name: REDIS_IP
-  #   secretKey: redis-url
-  #   remoteKeyBase: redis-ip
-    
+    property: postgresql_admin_password
+
   - name: MONGO_DATABASE
     secretKey: mongo-db
-    remoteKeyBase: mongo-db
+    property: mongo_db
     
   - name: MONGO_URL
     secretKey: mongo-url
-    remoteKeyBase: mongo-url
+    property: mongo_url
     
   - name: SMTP_HOST
     secretKey: smtp-host
-    remoteKeyBase: smtp-host
+    property: smtp_host
     
   - name: SMTP_USERNAME
     secretKey: smtp-username
-    remoteKeyBase: smtp-username
+    property: smtp_username
     
   - name: SMTP_PASSOWRD
     secretKey: smtp-password
-    remoteKeyBase: smtp-passowrd
+    property: smtp_passowrd
 
 # Environment do deploy
 environmentAllowedTypes:
