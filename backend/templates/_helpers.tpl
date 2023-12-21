@@ -78,6 +78,7 @@ Create external secrets remote key mapping in order to satisy different envirnom
 */}}
 {{- define "backend.externalSecrets.EnvirnomentsMapping" -}}
 {{- $envType := .Values.environmentType -}}
+{{- $vaultPath := .Values.secretStore.vaultProvider.path -}}
 {{- if not (has .Values.environmentType .Values.environmentAllowedTypes) -}}
 {{- $errorMessage := printf "Value '%s' for .Values.environmentType is not allowed! Allowed types: %s" .Values.environmentType .Values.environmentAllowedTypes -}}
 {{- fail $errorMessage -}}
@@ -85,6 +86,19 @@ Create external secrets remote key mapping in order to satisy different envirnom
 {{- range .Values.envSecretsMap }}
 - secretKey: {{ .secretKey }}
   remoteRef:
-    key: {{ $envType }}-{{ .remoteKeyBase }}
+    key: {{ $vaultPath }}/{{ $envType }}
+    property: {{ .property }}
 {{- end }}
+{{- end }}
+
+{{/*
+Create external secrets remote key mapping in order to satisy different envirnoments 
+*/}}
+{{- define "backend.secretStore.secretToken" -}}
+{{- $secretKey := .Values.secretStore.vaultProvider.secretToken.key -}}
+{{- $secretValue := .Values.secretStore.vaultProvider.secretToken.token -}}
+{{- if not ($secretValue) -}}
+{{- fail "No vault token for value .Values.secretStore.vaultProvider.secretToken.token is not specified!" -}}
+{{- end -}}
+{{ $secretKey }}: {{ $secretValue | b64enc }}
 {{- end }}
