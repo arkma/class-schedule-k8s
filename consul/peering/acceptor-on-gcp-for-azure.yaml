@@ -1,0 +1,11 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: PeeringAcceptor
+metadata:
+  name: azure
+  namespace: schedule-app
+spec:
+  peer:
+    secret:
+      name: "peering-token-azure"
+      key: "data"
+      backend: "kubernetes"
