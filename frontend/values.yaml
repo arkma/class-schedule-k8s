@@ -9,7 +9,7 @@ image:
   # repository: "nginx"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "nginx-no-conf"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -80,17 +80,20 @@ autoscaling:
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
+volumes:
+  - name: nginx-config
+    configMap:
+      name: nginx-config
+      items:
+        - key: nginx.conf
+          path: nginx.conf
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
+volumeMounts:
+  - name: nginx-config
+    mountPath: /etc/nginx/nginx.conf
+    subPath: nginx.conf
+    readOnly: false
 
 nodeSelector: {}
 
