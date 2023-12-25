@@ -116,10 +116,13 @@ secretStore:
     server: "YOUR_SERVER_ADDRESS"
     path: class_schedule
     version: v2
-    secretToken:
-      name: hashicorp-vault-token
-      key: token
-      token: null
+    auth:
+      method: "approle"
+      roleId: "YOUR_ROLE_ID"
+      secret:
+        name: "hashicorp-vault-approle-token"
+        key: "secret-id"
+        secretId: "YOUR_SECRET_ID"
 
 # External secrets
 externalSecrets:
@@ -128,55 +131,66 @@ externalSecrets:
   refreshTime: 1m
 
 
-# List of envirnoment variables
-envSecretsMap:
-  - name: JWT_TOKEN
-    secretKey: jwt-token
-    property: jwt_token
 
-  - name: JWT_EXPIRED
-    secretKey: jwt-expired
-    property: jwt_expired
+vaultSecrets:
+  envDelimiter: _
+  secretDelimiter: _
+  groups:
+    - name: postgresql
+      envPrefix: POSTGRES
+      secretPrefix: postgres
+      secrets:
+        - name: DB
+          key: db
+          property: db_name
+        - name: PORT
+          key: port
+          property: port
+        - name: IP
+          key: ip
+          property: ip
+        - name: ADMIN
+          key: admin
+          property: admin_username
+        - name: ADMIN_PASSWORD
+          key: password
+          property: admin_password
 
-  - name: POSTGRES_DB
-    secretKey: postgres-db
-    property: postgresql_db
+    - name: mongodb
+      envPrefix: MONGO
+      secretPrefix: mongo
+      secrets:
+        - name: DATABASE
+          key: db
+          property: db_name
+        - name: URL
+          key: url
+          property: url
 
-  - name: POSTGRES_PORT
-    secretKey: postgres-port
-    property: postgresql_port
+    - name: smtp
+      envPrefix: SMTP
+      secretPrefix: smtp
+      secrets:
+        - name: HOST
+          key: host
+          property: host
+        - name: USERNAME
+          key: username
+          property: username
+        - name: PASSOWRD
+          key: password
+          property: password
 
-  - name: POSTGRE_IP
-    secretKey: postgres-ip
-    property: postgresql_ip
-    
-  - name: POSTGRES_ADMIN
-    secretKey: postgres-admin
-    property: postgresql_admin
-    
-  - name: POSTGRES_ADMIN_PASSWORD
-    secretKey: postgres-password
-    property: postgresql_admin_password
-
-  - name: MONGO_DATABASE
-    secretKey: mongo-db
-    property: mongo_db
-    
-  - name: MONGO_URL
-    secretKey: mongo-url
-    property: mongo_url
-    
-  - name: SMTP_HOST
-    secretKey: smtp-host
-    property: smtp_host
-    
-  - name: SMTP_USERNAME
-    secretKey: smtp-username
-    property: smtp_username
-    
-  - name: SMTP_PASSOWRD
-    secretKey: smtp-password
-    property: smtp_passowrd
+    - name: jwt
+      envPrefix: JWT
+      secretPrefix: jwt
+      secrets:
+        - name: TOKEN
+          key: token
+          property: token
+        - name: EXPIRED
+          key: expired
+          property: expired
 
 # Environment do deploy
 environmentAllowedTypes:
