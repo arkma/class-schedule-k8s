@@ -1,4 +1,3 @@
-{{- $secretTargetName := .Values.externalSecrets.targetName -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,13 +37,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-{{- range .Values.envSecretsMap }}
-            - name: {{ .name }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $secretTargetName }}
-                  key: {{ .secretKey }}
-{{- end }}
+            {{- include "backend.deployment.secretsMapping" . | nindent 12 }}
             - name: REDIS_IP
               value: "localhost"
           ports:

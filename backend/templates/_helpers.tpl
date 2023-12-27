@@ -73,32 +73,59 @@ Create service account annotations to include additional info
 iam.gke.io/gcp-service-account: {{ .Values.gcp.iam.serviceAccount.name }}@{{ .Values.gcp.projectId }}.iam.gserviceaccount.com
 {{- end }}
 
-{{/*
-Create external secrets remote key mapping in order to satisy different envirnoments 
-*/}}
-{{- define "backend.externalSecrets.EnvirnomentsMapping" -}}
-{{- $envType := .Values.environmentType -}}
-{{- $vaultPath := .Values.secretStore.vaultProvider.path -}}
-{{- if not (has .Values.environmentType .Values.environmentAllowedTypes) -}}
-{{- $errorMessage := printf "Value '%s' for .Values.environmentType is not allowed! Allowed types: %s" .Values.environmentType .Values.environmentAllowedTypes -}}
-{{- fail $errorMessage -}}
-{{- end -}}
-{{- range .Values.envSecretsMap }}
-- secretKey: {{ .secretKey }}
-  remoteRef:
-    key: {{ $vaultPath }}/{{ $envType }}
-    property: {{ .property }}
-{{- end }}
-{{- end }}
 
 {{/*
 Create external secrets remote key mapping in order to satisy different envirnoments 
 */}}
-{{- define "backend.secretStore.secretToken" -}}
-{{- $secretKey := .Values.secretStore.vaultProvider.secretToken.key -}}
-{{- $secretValue := .Values.secretStore.vaultProvider.secretToken.token -}}
+{{- define "backend.secretStore.appRoleSecret" -}}
+{{- $secretKey := .Values.secretStore.vaultProvider.auth.secret.key -}}
+{{- $secretValue := .Values.secretStore.vaultProvider.auth.secret.secretId -}}
 {{- if not ($secretValue) -}}
-{{- fail "No vault token for value .Values.secretStore.vaultProvider.secretToken.token is not specified!" -}}
+{{- fail "No approle token for value .Values.secretStore.vaultProvider.auth.secret.secretId is not specified!" -}}
 {{- end -}}
 {{ $secretKey }}: {{ $secretValue | b64enc }}
+{{- end }}
+
+{{/*
+Create external secrets remote key mapping in order to satisfy different environments 
+*/}}
+{{- define "backend.externalSecrets.vaultSecretsMapping" -}}
+{{- $envType := .Values.environmentType -}}
+{{- $vaultPath := .Values.secretStore.vaultProvider.path -}}
+{{- $secretDelimiter := .Values.vaultSecrets.secretDelimiter -}}
+
+{{- $groups := .Values.vaultSecrets.groups -}}
+{{- range $group := $groups -}}
+{{- $secretPrefix := $group.secretPrefix -}}
+{{- $vaultFullPath :=  printf "%s/%s/%s" $vaultPath $envType $group.name -}}
+
+{{- range $secret := $group.secrets }}
+- secretKey: {{ printf "%s%s%s" $secretPrefix $secretDelimiter .key }}
+  remoteRef:
+    key: {{ $vaultFullPath }}
+    property: {{ .property }}
+{{- end }}
+{{- end }}
+{{- end }} 
+
+{{/*
+Create deployment secrets mapping to satisfy different environments
+*/}}
+{{- define "backend.deployment.secretsMapping" -}}
+{{- $envType := .Values.environmentType -}}
+{{- $vaultSecrets := .Values.vaultSecrets -}}
+{{- $secretTargetName := .Values.externalSecrets.targetName -}}
+
+{{- range $group := $vaultSecrets.groups -}}
+{{- $secretPrefix := $group.secretPrefix -}}
+{{- $envPrefix := $group.envPrefix -}}
+
+{{- range $secret := $group.secrets }}
+- name: {{ printf "%s%s%s" $envPrefix $vaultSecrets.envDelimiter $secret.name }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secretTargetName }}
+      key: {{ printf "%s%s%s" $secretPrefix $vaultSecrets.secretDelimiter $secret.key }}
+{{- end }}
+{{- end -}}
 {{- end }}
