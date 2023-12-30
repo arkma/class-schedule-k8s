@@ -1,8 +1,0 @@
-apiVersion: consul.hashicorp.com/v1alpha1
-kind: Mesh
-metadata:
-  name: mesh
-  namespace: schedule-app
-spec:
-  peering:
-    peerThroughMeshGateways: true
