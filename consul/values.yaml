@@ -17,7 +17,7 @@ global:
     manageSystemACLs: true
 # Configures values that configure the Consul server cluster.
 server:
-  enabled: true
+  enabled: false
   # The number of server agents to run. This determines the fault tolerance of the cluster.
   replicas: 1
 # Contains values that configure the Consul UI.
