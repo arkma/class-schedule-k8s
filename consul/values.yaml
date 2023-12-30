@@ -5,8 +5,9 @@ global:
   enabled: true
   # The prefix used for all resources created in the Helm chart.
   name: consul
-  # The name of the datacenter that the agents should register as.
-  datacenter: dc1
+  # Enable cluster peering
+  peering:
+    enabled: true # mandatory for cluster peering
   # Enables TLS across the cluster to verify authenticity of the Consul servers and clients.
   tls:
     enabled: true
@@ -16,7 +17,7 @@ global:
     manageSystemACLs: true
 # Configures values that configure the Consul server cluster.
 server:
-  enabled: true
+  enabled: false
   # The number of server agents to run. This determines the fault tolerance of the cluster.
   replicas: 1
 # Contains values that configure the Consul UI.
@@ -35,3 +36,6 @@ connectInject:
       # Defines the type of service created for gateways (e.g. LoadBalancer, ClusterIP, NodePort)
       # NodePort is primarily used for local deployments.
       serviceType: LoadBalancer
+
+meshGateway:
+  enabled: true # mandatory for k8s cluster peering
