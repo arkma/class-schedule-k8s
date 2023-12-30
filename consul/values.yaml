@@ -17,12 +17,12 @@ global:
     manageSystemACLs: true
 # Configures values that configure the Consul server cluster.
 server:
-  enabled: false
+  enabled: true
   # The number of server agents to run. This determines the fault tolerance of the cluster.
   replicas: 1
 # Contains values that configure the Consul UI.
 ui:
-  enabled: true
+  enabled: false
   # Registers a Kubernetes Service for the Consul UI as a LoadBalancer.
   service:
     type: LoadBalancer
