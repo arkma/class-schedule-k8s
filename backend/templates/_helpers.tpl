@@ -129,3 +129,38 @@ Create deployment secrets mapping to satisfy different environments
 {{- end }}
 {{- end -}}
 {{- end }}
+
+
+{{/*
+Combine private registry credentials
+*/}}
+{{- define "backend.imagePullSecret" }}
+{{- with .Values.imageCredentials }}
+{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .registry .username .password .email (printf "%s:%s" .username .password | b64enc) | b64enc }}
+{{- end }}
+{{- end }}
+
+{{/*
+Crate the image pull secrets for the deployment
+*/}}
+{{- define "backend.deployment.imagePullSecrets" -}}
+- name: {{ .Values.imageCredentials.registry }}.{{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Crate the image pull secrets for the deployment
+*/}}
+{{- define "backend.imagePullSecret.name" -}}
+{{ .Values.imageCredentials.registry }}.{{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Crate pod annotations including additional rolling update checks
+*/}}
+{{- define "backend.deployment.annotations" -}}
+{{- .Values.podAnnotations | toYaml }}
+{{- if .Values.deployForceUpdate }}
+force.rolling.upage/rand: {{ randAlphaNum 5 | quote }}
+{{- end }}
+{{- end -}}
+

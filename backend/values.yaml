@@ -4,13 +4,20 @@
 
 replicaCount: 1
 
+deployForceUpdate: false # Set it to true if you want to recreate the deployment
+
 image:
-  repository: "blueguys/class-schedule-backend"
+  name: "class-schedule-backend"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
-imagePullSecrets: []
+imageCredentials:
+  registry: YOUR_REGISTRY_ADDRESS
+  username: YOUR_REGISTRY_USERNAME
+  password: YOUR_REGISTRY_PASSWORD
+  email: your_email@your_email_host.com
+
 nameOverride: ""
 fullnameOverride: ""
 
@@ -25,7 +32,10 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {consul.hashicorp.com/connect-inject: 'true',consul.hashicorp.com/transparent-proxy: 'true',consul.hashicorp.com/connect-service-upstreams: 'backend-redis-master:6379'}
+podAnnotations:
+  consul.hashicorp.com/connect-inject: 'true'
+  consul.hashicorp.com/transparent-proxy: 'true'
+  consul.hashicorp.com/connect-service-upstreams: 'backend-redis-master:6379'
 podLabels: {}
 
 podSecurityContext: {}

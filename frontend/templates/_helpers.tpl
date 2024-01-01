@@ -60,3 +60,37 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Combine private registry credentials
+*/}}
+{{- define "frontend.imagePullSecret" }}
+{{- with .Values.imageCredentials }}
+{{- printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"email\":\"%s\",\"auth\":\"%s\"}}}" .registry .username .password .email (printf "%s:%s" .username .password | b64enc) | b64enc }}
+{{- end }}
+{{- end }}
+
+{{/*
+Crate the image pull secrets for the deployment
+*/}}
+{{- define "frontend.deployment.imagePullSecrets" -}}
+- name: {{ .Values.imageCredentials.registry }}.{{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Crate the image pull secrets for the deployment
+*/}}
+{{- define "frontend.imagePullSecret.name" -}}
+{{ .Values.imageCredentials.registry }}.{{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Crate pod annotations including additional rolling update checks
+*/}}
+{{- define "frontend.deployment.annotations" -}}
+{{- .Values.podAnnotations | toYaml }}
+checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+{{- if .Values.deployForceUpdate }}
+force.rolling.upage/rand: {{ randAlphaNum 5 | quote }}
+{{- end }}
+{{- end -}}
