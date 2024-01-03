@@ -35,7 +35,11 @@ connectInject:
     managedGatewayClass:
       # Defines the type of service created for gateways (e.g. LoadBalancer, ClusterIP, NodePort)
       # NodePort is primarily used for local deployments.
-      serviceType: LoadBalancer
+      serviceType: ClusterIP
+      copyAnnotations:
+        service:
+          annotations: |
+            - cloud.google.com/neg: '{"ingress": true}'
 
 meshGateway:
   enabled: true # mandatory for k8s cluster peering
